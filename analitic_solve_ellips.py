@@ -81,10 +81,10 @@ def ellipse(a, b, alpha, vinf, size):
     c = ax.pcolormesh(X + np.sqrt(2) / 2, Y, speed, shading='auto', cmap='viridis') 
 
     # Добавляем цветовую шкалу
-    plt.colorbar(c, label='Скорость')
+    plt.colorbar(c, label='Модуль вектора скорости')
 
     # Стримплот
-    stream = ax.streamplot(X + np.sqrt(2) / 2, Y, Ux, Uy, density=4, minlength=0.8, color='black', linewidth=1.2, arrowsize=0)
+    stream = ax.streamplot(X + np.sqrt(2) / 2, Y, Ux, Uy, density=4, minlength=0.8, color='black', linewidth=1.2, arrowsize=1)
     
     # Поворот всех элементов на 45 градусов
     angle = 45  # Угол поворота в градусах

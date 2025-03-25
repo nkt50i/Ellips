@@ -29,6 +29,25 @@ def circulation_cylinder(a, alpha, vinf, gamma, size):
     stagnation_x2 = fsolve(stagnation_eq, cx - c)[0]
     stagnation_points = np.array([[stagnation_x1, cy], [stagnation_x2, cy]])
     
+    # Вычисление циркуляции в стагнационных точках
+    def circulation_at_stagnation(x, y):
+        z = complex(x - cx, y - cy)
+        w_prime = vinf * (np.exp(-1j * alpha_rad) - c**2 / z**2 * np.exp(1j * alpha_rad)) + 1j * gamma / (2 * np.pi * z)
+        return np.imag(w_prime)  # Функция тока в стагнационной точке
+
+    # Суммарная циркуляция по двум стагнационным точкам
+    total_circulation = 0
+    for point in stagnation_points:
+        circulation_value = circulation_at_stagnation(point[0], point[1])
+        total_circulation += circulation_value
+    
+    # Вывод стагнационных точек
+    for i, point in enumerate(stagnation_points):
+        print(f"Критическая точка {i+1}: X = {point[0]}, Y = {point[1]}")
+    
+    # Вывод суммарной циркуляции
+    print(f"Циркуляция: {total_circulation}")
+    
     # Создание сетки
     x = np.linspace(0, 1, size)
     y = np.linspace(0, 1, size)
@@ -47,10 +66,10 @@ def circulation_cylinder(a, alpha, vinf, gamma, size):
     plt.pcolormesh(X, Y, speed, shading='auto', cmap='viridis') 
 
     # Добавляем цветовую шкалу
-    plt.colorbar(label='Скорость')
+    plt.colorbar(label='Модуль вектора скорости')
     
     # Линии тока
-    stream = ax.streamplot(X, Y, U, V, color='black', linewidth=1.2, density=2, minlength=0.8, arrowsize=0)
+    stream = ax.streamplot(X, Y, U, V, color='black', linewidth=1.2, density=2, minlength=0.8, arrowsize=1)
     
     # Отрисовка цилиндра
     theta = np.linspace(0, 2 * np.pi, 300)
@@ -66,15 +85,16 @@ def circulation_cylinder(a, alpha, vinf, gamma, size):
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.set_aspect('equal')
-    plt.xlabel("L")
-    plt.ylabel("H")
+    plt.xlabel("x1")
+    plt.ylabel("x2")
     plt.title("Обтекание цилиндра с циркуляцией")
     
     # Добавляем легенду
     ax.legend(handles=[stagnation_plot, cylinder_line, stream.lines], labels=["Критические точки", "Контур цилиндра", "Линии тока"])
 
-    plt.show()
+    # Сохраняем изображение в файл PNG
+    plt.savefig("circulation_cylinder.png", format="png")
+    plt.close(fig)  # Закрываем фигуру
 
 # Вызов функции
 circulation_cylinder(0.125, 0, 1.0, 0.1, 1000)
-
