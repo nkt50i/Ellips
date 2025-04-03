@@ -13,7 +13,7 @@ def circulation_cylinder(a, alpha, vinf, gamma, size):
         z = (x - cx) + 1j * (y - cy)
         if np.abs(z) < c:  # Если точка внутри цилиндра, возвращаем NaN
             return np.nan, np.nan
-        w_prime = vinf * (np.exp(-1j * alpha_rad) - c**2 / z**2 * np.exp(1j * alpha_rad)) + 1j * gamma / (2 * np.pi * z)
+        w_prime = vinf * (np.exp(-1j * alpha_rad) - c**2 / z**2 * np.exp(1j * alpha_rad))
         return np.real(w_prime), -np.imag(w_prime)
     
     # Поиск стагнационных точек
@@ -21,7 +21,7 @@ def circulation_cylinder(a, alpha, vinf, gamma, size):
         """ Уравнение для нахождения стагнационной точки (по горизонтальной оси) """
         x = x[0]  # Берём первый элемент массива
         z = complex(x - cx, cy - cy)  # Только x-координата меняется, y=cy
-        w_prime = vinf * (np.exp(-1j * alpha_rad) - c**2 / z**2 * np.exp(1j * alpha_rad)) + 1j * gamma / (2 * np.pi * z)
+        w_prime = vinf * (np.exp(-1j * alpha_rad) - c**2 / z**2 * np.exp(1j * alpha_rad))
         return np.real(w_prime)  # Должно быть равно 0
 
     # Ищем два корня (левый и правый стагнационные точки)
@@ -69,7 +69,7 @@ def circulation_cylinder(a, alpha, vinf, gamma, size):
     plt.colorbar(label='Модуль вектора скорости')
     
     # Линии тока
-    stream = ax.streamplot(X, Y, U, V, color='black', linewidth=1.2, density=2, minlength=0.8, arrowsize=1)
+    stream = ax.streamplot(X, Y, U, V, color='black', linewidth=1.2, density=1.8, minlength=0.85, arrowsize=0)
     
     # Отрисовка цилиндра
     theta = np.linspace(0, 2 * np.pi, 300)
@@ -97,4 +97,4 @@ def circulation_cylinder(a, alpha, vinf, gamma, size):
     plt.close(fig)  # Закрываем фигуру
 
 # Вызов функции
-circulation_cylinder(0.125, 0, 1.0, 0.1, 1000)
+circulation_cylinder(0.125, 0, 1.0, 0.0, 1000)

@@ -1,17 +1,17 @@
-from dolfin import *
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from dolfin import *
 
-# Загрузка сетки из файла .xml
-mesh = Mesh("ellips_3.xml")
-boundaries = MeshFunction("size_t", mesh, "ellips_3_facet_region.xml")
-
+# Загрузка сетки
+mesh = Mesh("ellips_0175.xml")
+boundaries = MeshFunction("size_t", mesh, "ellips_0175_facet_region.xml")
 ds = Measure("ds", subdomain_data=boundaries)
 
 # Определение функционального пространства
-V = FunctionSpace(mesh, "CG", 1)
+V = FunctionSpace(mesh, "CG", 4)
 
-# Информация о сетке и числе искомых величин
+# Информации о сетке и числе искомых величин
 n_c = mesh.num_cells()
 n_v = mesh.num_vertices()
 n_d = V.dim()
@@ -21,18 +21,21 @@ print(f"Число узлов сетки: {n_v}")
 print(f"Число искомых дискретных значений: {n_d}")
 
 # Условие на входе в канал
-u_1 = Expression("x[1]", degree=2)
+u_infinity = Expression("x[1]", degree=2)
+H = 1
+psi_0 = u_infinity * H
 
 # Граничные условия
-bcs = [DirichletBC(V, Constant(1.0), boundaries, 1),    # Условие на границе 1
-       DirichletBC(V, Constant(1.0), boundaries, 2),    # Условие на границе 2
-       DirichletBC(V, Constant(0.0), boundaries, 5),    # Условие на границе 5
-       DirichletBC(V, u_1, boundaries, 3)]              # Условие на границе 3
+bcs = [DirichletBC(V, Constant(0.0), boundaries, 1), 
+       DirichletBC(V, u_infinity * H, boundaries, 2),
+       DirichletBC(V, Constant(0.5), boundaries, 5),
+       DirichletBC(V, u_infinity * H, boundaries, 3),
+       DirichletBC(V, u_infinity * H, boundaries, 4)]
 
 # Вариационная задача
 u = TrialFunction(V)
 v = TestFunction(V)
-f = Constant(0.0)  
+f = Constant(0.0)
 a = dot(grad(u), grad(v)) * dx
 L = f * v * dx
 
@@ -40,33 +43,75 @@ L = f * v * dx
 u = Function(V)
 solve(a == L, u, bcs)
 
-# Циркуляция 
-n = FacetNormal(mesh)  
-u_n = dot(grad(u), n)  
+# Вычисление скорости
+V_vector = VectorFunctionSpace(mesh, "CG", 4)
+velocity = project(grad(u), V_vector)
+velocity_magnitude = project(sqrt(dot(velocity, velocity)), V)
+
+# Вычисление циркуляции
+n = FacetNormal(mesh)
+u_n = dot(grad(u), n)
 Gamma = assemble(u_n * ds(subdomain_data=boundaries, subdomain_id=5))
 print(f"Циркуляция: {Gamma:.5e}")
 
-# Создание сетки для визуализации
+# Сетка для визуализации
 coordinates = mesh.coordinates()
 x = coordinates[:, 0]
 y = coordinates[:, 1]
 triangles = mesh.cells()
-
-# Значения решения в узлах сетки
 u_values = u.compute_vertex_values(mesh)
+velocity_values = velocity_magnitude.compute_vertex_values(mesh)
 
-# Создание графика
-plt.figure(figsize=(12, 6))  # задаем размеры графика
+# Поиск критических точек (где скорость почти нулевая)
+threshold = 1e-3
+critical_points = (velocity_values < threshold)
+critical_x = x[critical_points]
+critical_y = y[critical_points]
 
-# Контурный график с ограничением диапазона от 0 до 1
-contour = plt.tricontourf(x, y, triangles, u_values, levels=50, cmap='viridis', vmin=0, vmax=1)
+# График
+fig, ax = plt.subplots(figsize=(10, 10))
+cbar = plt.colorbar(plt.tricontourf(x, y, triangles, velocity_values, levels=100, cmap='viridis'))
+cbar.set_label("Модуль вектора скорости")
 
-# Изолинии через равные промежутки
-isolines = plt.tricontour(x, y, triangles, u_values, levels=np.linspace(0, 1, 41), colors='white', linewidths=0.5)
+# Параметры эллипса
+cx, cy = 0.5, 0.5  # Центр эллипса
+a, b = 0.175, 0.125   # Полуоси эллипса
+alpha = np.radians(45)  # Угол поворота
 
-# Добавление цветовой шкалы
-plt.colorbar(contour)
+# Генерация эллипса
+theta = np.linspace(0, 2 * np.pi, 300)
+x_ellipse = a * np.cos(theta)
+y_ellipse = b * np.sin(theta)
 
-# Отображение графика
-plt.savefig('ellips_solution.png', format="png", dpi=600)
+# Поворот эллипса
+ellipse_x = cx + x_ellipse * np.cos(alpha) - y_ellipse * np.sin(alpha)
+ellipse_y = cy + x_ellipse * np.sin(alpha) + y_ellipse * np.cos(alpha)
+
+# Отрисовка эллипса
+ax.fill(ellipse_x, ellipse_y, 'w', zorder=3)
+ellipse_line, = ax.plot(ellipse_x, ellipse_y, 'r', linewidth=2.2, zorder=4)
+
+# Отображение критических точек
+ax.scatter(critical_x, critical_y, color='lime', s=100, label="Критические точки", zorder=5)
+
+# Изолинии
+isolines = plt.tricontour(x, y, triangles, u_values, levels=np.linspace(0, 1.2, 40), colors='black', linewidths=1.2)
+
+# Легенда
+legend_elements = [
+    Line2D([0], [0], color='r', linewidth=2.2, label="Контур эллипса"),
+    Line2D([0], [0], color='black', linestyle='-', label="Линии тока"),
+    plt.Line2D([], [], color='lime', marker='o', linestyle='None', markersize=10, label="Критические точки")
+]
+
+ax.legend(handles=legend_elements, loc='upper right')
+
+# Настройки графика
+plt.savefig('ellips_solve_0175.png', format="png", dpi=1000)
+ax.set_xlim(0, 1)
+ax.set_ylim(0, 1)
+ax.set_aspect('equal')
+plt.xlabel("x1")
+plt.ylabel("x2")
+plt.title("Обтекание эллипса с циркуляцией")
 plt.show()

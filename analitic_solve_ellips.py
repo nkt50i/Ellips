@@ -29,13 +29,17 @@ def ellipse(a, b, alpha, vinf, size):
         h = 1e-8
         return (w(z + h, Gamma) - w(z - h, Gamma)) / (2 * h)
     
-    Gamma_solution = root(lambda Gamma: np.abs(w_prime(a, Gamma)), 0)
-    Gamma = Gamma_solution.x[0]
+    Gamma = 0.00000001 # Задаем не нулевую так как функция чувствительная к начальному приближению
     
     # Построение эллипса
-    theta = np.linspace(0, 2*np.pi, 100)
+    theta = np.linspace(0, 2*np.pi, 100000)
     x_ellipse = a * np.cos(theta)
     y_ellipse = b1 * np.sin(theta)
+    
+    dz = (x_ellipse[1:] - x_ellipse[:-1]) + 1j * (y_ellipse[1:] - y_ellipse[:-1])
+    velocity = w_prime(x_ellipse[:-1] + 1j * y_ellipse[:-1], Gamma)
+    circulation = np.sum(velocity * dz)
+    print(f"Циркуляция по контуру эллипса: {circulation.real:.5f}")
     
     # Генерация сетки для потока (большая область 3x3)
     x = np.linspace(-1.5, 1.5, size)  # Изменили диапазон на -1.5 до 1.5 (для области 3x3)
@@ -65,7 +69,7 @@ def ellipse(a, b, alpha, vinf, size):
         return z_stag
     
     stagnation_point1 = find_stagnation_point(a)
-    stagnation_point2 = find_stagnation_point(-a - 0.1)
+    stagnation_point2 = find_stagnation_point(-a - 0.1) # -a + 0.05 # - a - 0.1 # - a - 0.175
     stagnation_points = [p for p in [stagnation_point1, stagnation_point2] if p is not None]
     
     # Отображение
@@ -84,7 +88,8 @@ def ellipse(a, b, alpha, vinf, size):
     plt.colorbar(c, label='Модуль вектора скорости')
 
     # Стримплот
-    stream = ax.streamplot(X + np.sqrt(2) / 2, Y, Ux, Uy, density=4, minlength=0.8, color='black', linewidth=1.2, arrowsize=1)
+    stream = ax.streamplot(X + np.sqrt(2) / 2, Y, Ux, Uy, density=4, minlength=0.8, color='black', linewidth=1.2, arrowsize=0)
+    
     
     # Поворот всех элементов на 45 градусов
     angle = 45  # Угол поворота в градусах
@@ -129,4 +134,4 @@ def ellipse(a, b, alpha, vinf, size):
 
     plt.show()
 
-ellipse(0.225, 0.125, -45/180*np.pi, 1.0, 1000)
+ellipse(0.225, 0.125, -45/180*np.pi, 1.0, 1000) # 0.175 # 0.225 # 0.275

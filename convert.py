@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Загрузка сетки из файла .msh с использованием meshio
-msh_file = "ellips_3.msh"
+msh_file = "ellips_0275.msh"
 mesh_data = meshio.read(msh_file)
 
 # Извлечение информации о сетке
@@ -39,5 +39,5 @@ plt.figure()
 plot(mesh)
 plt.xlabel("$x_1$")
 plt.ylabel("$x_2$")
-plt.savefig('ellips_2.png', format="png", dpi=600)
+plt.savefig('ellips_0275.png', format="png", dpi=600)
 plt.show()
