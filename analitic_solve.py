@@ -55,15 +55,15 @@ def circulation_cylinder(a, alpha, vinf, gamma, size):
     
     # Вычисление поля скоростей
     U, V = np.vectorize(velocity_field)(X, Y)
+
+    # Вычисление скорости
+    speed = np.sqrt(np.abs(U)**2 + np.abs(V)**2)
     
     # График
     fig, ax = plt.subplots(figsize=(10, 10))
 
-    # Вычисление скорости
-    speed = np.sqrt(np.abs(U)**2 + np.abs(V)**2)
-
     # Цветовая подложка
-    plt.pcolormesh(X, Y, speed, shading='auto', cmap='viridis') 
+    plt.tricontourf(X, Y, speed, shading='auto', cmap='viridis') 
 
     # Добавляем цветовую шкалу
     plt.colorbar(label='Модуль вектора скорости')
@@ -87,7 +87,7 @@ def circulation_cylinder(a, alpha, vinf, gamma, size):
     ax.set_aspect('equal')
     plt.xlabel("x1")
     plt.ylabel("x2")
-    plt.title("Обтекание цилиндра с циркуляцией")
+    plt.title("Обтекание цилиндра с циркулляцией")
     
     # Добавляем легенду
     ax.legend(handles=[stagnation_plot, cylinder_line, stream.lines], labels=["Критические точки", "Контур цилиндра", "Линии тока"])

@@ -4,12 +4,12 @@ from matplotlib.lines import Line2D
 from dolfin import *
 
 # Загрузка сетки
-mesh = Mesh("ellips_0175.xml")
-boundaries = MeshFunction("size_t", mesh, "ellips_0175_facet_region.xml")
+mesh = Mesh("ellips_3.xml")
+boundaries = MeshFunction("size_t", mesh, "ellips_3_facet_region.xml")
 ds = Measure("ds", subdomain_data=boundaries)
 
 # Определение функционального пространства
-V = FunctionSpace(mesh, "CG", 4)
+V = FunctionSpace(mesh, "CG", 3)
 
 # Информации о сетке и числе искомых величин
 n_c = mesh.num_cells()
@@ -44,7 +44,7 @@ u = Function(V)
 solve(a == L, u, bcs)
 
 # Вычисление скорости
-V_vector = VectorFunctionSpace(mesh, "CG", 4)
+V_vector = VectorFunctionSpace(mesh, "CG", 3)
 velocity = project(grad(u), V_vector)
 velocity_magnitude = project(sqrt(dot(velocity, velocity)), V)
 
@@ -75,7 +75,7 @@ cbar.set_label("Модуль вектора скорости")
 
 # Параметры эллипса
 cx, cy = 0.5, 0.5  # Центр эллипса
-a, b = 0.175, 0.125   # Полуоси эллипса
+a, b = 0.125, 0.125   # Полуоси эллипса
 alpha = np.radians(45)  # Угол поворота
 
 # Генерация эллипса
@@ -107,11 +107,12 @@ legend_elements = [
 ax.legend(handles=legend_elements, loc='upper right')
 
 # Настройки графика
-plt.savefig('ellips_solve_0175.png', format="png", dpi=1000)
+plt.tight_layout()  # Оптимизация отступов
+plt.savefig('1.png', format="png", dpi=1000)
 ax.set_xlim(0, 1)
 ax.set_ylim(0, 1)
-ax.set_aspect('equal')
+ax.set_aspect('equal', adjustable='box')  # Сохранение пропорций
 plt.xlabel("x1")
 plt.ylabel("x2")
-plt.title("Обтекание эллипса с циркуляцией")
+plt.title("Обтекание эллипса с циркулляцией")
 plt.show()
