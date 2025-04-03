@@ -376,6 +376,26 @@ elif menu == "Программная реализация":
 
         st.code(code, language="python")
 
+    with st.expander("Построение эллипса"):
+        code = """
+            # Параметры эллипса
+            cx, cy = 0.5, 0.5  # Центр эллипса
+            a, b = 0.125, 0.125   # Полуоси эллипса
+            alpha = np.radians(45)  # Угол поворота
+
+            # Генерация эллипса
+            theta = np.linspace(0, 2 * np.pi, 300)
+            x_ellipse = a * np.cos(theta)
+            y_ellipse = b * np.sin(theta)
+
+            # Поворот эллипса
+            ellipse_x = cx + x_ellipse * np.cos(alpha) - y_ellipse * np.sin(alpha)
+            ellipse_y = cy + x_ellipse * np.sin(alpha) + y_ellipse * np.cos(alpha)
+
+        """
+
+        st.code(code, language="python")
+
 
     
 
