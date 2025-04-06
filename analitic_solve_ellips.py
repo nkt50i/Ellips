@@ -69,7 +69,7 @@ def ellipse(a, b, alpha, vinf, size):
         return z_stag
     
     stagnation_point1 = find_stagnation_point(a)
-    stagnation_point2 = find_stagnation_point(-a - 0.1) # -a + 0.05 # - a - 0.1 # - a - 0.175
+    stagnation_point2 = find_stagnation_point(-a - 0.175) # -a + 0.05 # - a - 0.1 # - a - 0.175
     stagnation_points = [p for p in [stagnation_point1, stagnation_point2] if p is not None]
     
     # Отображение
@@ -113,8 +113,11 @@ def ellipse(a, b, alpha, vinf, size):
     
     stagnation_points_rot = [rotate_coords(np.real(p), np.imag(p), np.radians(angle)) for p in stagnation_points]
     stagnation_plot = []
-    for p in stagnation_points_rot:
-        stagnation_plot.append(ax.scatter(p[0] + 0.5, p[1] + 0.5, color='lime', s=100, zorder=3, label="Критические точки"))
+    for i, p in enumerate(stagnation_points_rot):
+        x_rot, y_rot = p  # безопасно распаковываем кортеж
+        x_plot, y_plot = x_rot + 0.5, y_rot + 0.5
+        stagnation_plot.append(ax.scatter(x_plot, y_plot, color='lime', s=100, zorder=3, label="Критические точки"))
+        print(f"Критическая точка #{i+1}: x = {x_plot:.5f}, y = {y_plot:.5f}")
 
     # Создаем прокси для линий тока
     stream_line_proxy = mlines.Line2D([], [], color='black', linewidth=1.2, label="Линии тока")
@@ -134,4 +137,4 @@ def ellipse(a, b, alpha, vinf, size):
 
     plt.show()
 
-ellipse(0.225, 0.125, -45/180*np.pi, 1.0, 1000) # 0.175 # 0.225 # 0.275
+ellipse(0.275, 0.125, -45/180*np.pi, 1.0, 1000) # 0.175 # 0.225 # 0.275

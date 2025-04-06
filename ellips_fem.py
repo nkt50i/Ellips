@@ -4,8 +4,8 @@ from matplotlib.lines import Line2D
 from dolfin import *
 
 # Загрузка сетки
-mesh = Mesh("ellips_3.xml")
-boundaries = MeshFunction("size_t", mesh, "ellips_3_facet_region.xml")
+mesh = Mesh("ellips_0275.xml")
+boundaries = MeshFunction("size_t", mesh, "ellips_0275_facet_region.xml")
 ds = Measure("ds", subdomain_data=boundaries)
 
 # Определение функционального пространства
@@ -63,7 +63,7 @@ u_values = u.compute_vertex_values(mesh)
 velocity_values = velocity_magnitude.compute_vertex_values(mesh)
 
 # Поиск критических точек (где скорость почти нулевая)
-threshold = 1e-3
+threshold = 1e-2
 critical_points = (velocity_values < threshold)
 critical_x = x[critical_points]
 critical_y = y[critical_points]
@@ -75,7 +75,7 @@ cbar.set_label("Модуль вектора скорости")
 
 # Параметры эллипса
 cx, cy = 0.5, 0.5  # Центр эллипса
-a, b = 0.125, 0.125   # Полуоси эллипса
+a, b = 0.275, 0.125   # Полуоси эллипса
 alpha = np.radians(45)  # Угол поворота
 
 # Генерация эллипса
@@ -108,7 +108,7 @@ ax.legend(handles=legend_elements, loc='upper right')
 
 # Настройки графика
 plt.tight_layout()  # Оптимизация отступов
-plt.savefig('1.png', format="png", dpi=1000)
+plt.savefig('ellips_solve_fem_1.png', format="png", dpi=1000)
 ax.set_xlim(0, 1)
 ax.set_ylim(0, 1)
 ax.set_aspect('equal', adjustable='box')  # Сохранение пропорций
