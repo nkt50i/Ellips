@@ -16,7 +16,7 @@ st.markdown("""
 st.image("logo.jpg", width=300, use_container_width=True)
 
 st.markdown("""
-    <h1 style="text-align:center; font-size: 50px;">Gmsh</h1>
+    <h1 style="text-align:center; font-size: 50px;">Численное исследование потенциального обтекания пучка цилиндров эллиптического сечения</h1>
 """, unsafe_allow_html=True)
 
 st.markdown("""
@@ -25,12 +25,12 @@ st.markdown("""
 
 # Данные участников
 participants = [
-    {"name": "Головня Никита", "photo": "0.jpg"},
-    {"name": "Александр Романенко", "photo": "1.jpg"},
-    {"name": "Гашигуллин Камиль", "photo": "2.jpg"},
-    {"name": "Коврижных Анастасия", "photo": "3.jpg"},
-    {"name": "Сержантов Артемий", "photo": "4.jpg"},
-    {"name": "", "photo": "6.jpg"},
+    {"name": "Головня Никита", "photo": "0.jpeg"},
+    {"name": "Александр Романенко", "photo": "1.jpeg"},
+    {"name": "Гашигуллин Камиль", "photo": "2.jpeg"},
+    {"name": "Коврижных Анастасия", "photo": "3.jpeg"},
+    {"name": "Сержантов Артемий", "photo": "4.jpeg"},
+    
 ]
 
 # Вывод участников в две строки
@@ -56,13 +56,14 @@ for i, participant in enumerate(row2):
 st.markdown("""
     <h2 style="text-align:left;">О презентации</h2>
     <p style="text-align:left; font-size: 18px;">
-        В данной презентации рассматривается использование Gmsh — мощного инструмента для генерации 
-        конечных элементов. Мы обсудим его основные возможности, настройку сеток, работу с файлами 
-        форматов .geo и .msh, а также примеры его применения в различных задачах моделирования.
+        Исследование потенциального обтекания пучков цилиндров эллиптического сечения представляет собой
+             важную задачу теоретической и прикладной аэрогидродинамики. Такие течения встречаются в
+             широком спектре инженерных приложений, включая конструкции теплообменников, элементы
+             гидродинамических систем и аэродинамические структуры. 
     </p>
     <p style="text-align:left; font-size: 18px;">
         Данный проект можно посмотреть и скачать на 
-        <a href="https://github.com/nkt50i/Gmsh" target="_blank" style="font-weight: bold;">
+        <a href="https://github.com/nkt50i/Ellips" target="_blank" style="font-weight: bold;">
         GitHub</a>.
     </p>
     <p style="text-align:left; font-size: 18px; font-weight: bold;">
