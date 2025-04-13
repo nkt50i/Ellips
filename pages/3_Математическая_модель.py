@@ -36,7 +36,7 @@ r"""
     \psi_0 = \int_0^H u_1(\bm x) d \bm x 
     \end{aligned}$
     
-    где $\begin{aligned} u_1\end{aligned}$​ — продольная компонента скорости.
+    $\begin{aligned} u_1\end{aligned}$​ — продольная компонента скорости.
     
     Скорость $\bm u = \{u_\infty, 0\}$ на входе 
     
